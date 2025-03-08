@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, HashRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
@@ -8,18 +8,18 @@ import Navbar from './components/Navbar';
 
 function App() {
   return (
-    <Router>
+    <HashRouter>
       <AuthProvider>
         <Toaster position="top-right" />
         <Navbar />
         <Routes>
-          <Route path="/blog_post" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
-    </Router>
+      </HashRouter>
   );
 }
 
