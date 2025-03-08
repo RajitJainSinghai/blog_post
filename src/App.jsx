@@ -20,6 +20,8 @@ function App() {
         </Routes>
       </AuthProvider>
       </HashRouter> //if the repository name is not coming at the end of the link then add hashrouter.
+
+      
   );
 }
 
