@@ -19,7 +19,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
-      </HashRouter>
+      </HashRouter> //if the repository name is not coming at the end of the link then add hashrouter.
   );
 }
 
