@@ -10,22 +10,8 @@ export default function BlogPost({ post, onEdit, onDelete }) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
-    
-    setLoading(true);
-    try {
-      await databases.deleteDocument(
-        import.meta.env.VITE_APPWRITE_DATABASE_ID,
-        import.meta.env.VITE_APPWRITE_COLLECTION_ID,
-        post.$id
-      );
-      onDelete(post.$id);
-      toast.success('Post deleted successfully!');
-    } catch (error) {
-      toast.error('Failed to delete post.');
-    }
-    setLoading(false);
+  const handleDelete = () => {
+    onDelete(post.$id);
   };
 
   return (

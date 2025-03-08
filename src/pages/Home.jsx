@@ -7,13 +7,13 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
 export default function Home() {
-  const { user } = useAuth(); // Only needed for edit/create controls
+  const { user } = useAuth(); 
   const [posts, setPosts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch posts on load
+  // Fetch posts on component mount
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -35,30 +35,35 @@ export default function Home() {
     setLoading(false);
   };
 
-  // Handle post deletion
+  // Handle post deletion and update state
   const handleDelete = async (postId) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
-    
+    const confirmDelete = window.confirm('Are you sure you want to delete this post?');
+    if (!confirmDelete) return;
+  
     try {
       await databases.deleteDocument(
         appwriteConfig.databaseId,
         appwriteConfig.collectionId,
         postId
       );
-      setPosts(posts.filter(post => post.$id !== postId));
+      setPosts((prevPosts) => prevPosts.filter((post) => post.$id !== postId));
       toast.success('Post deleted successfully!');
     } catch (error) {
       toast.error('Failed to delete post.');
       console.error('Error deleting post:', error);
     }
   };
-
+  
+  
   return (
-    <div className=" container">
+    <div className="container">
       {/* Show "Create Post" Button only if User is Logged In */}
       {user && !isEditing && (
         <button
-          onClick={() => setIsEditing(true)}
+          onClick={() => {
+            setIsEditing(true);
+            setEditingPost(null);
+          }}
           className="mb-8 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           Create New Post
@@ -95,7 +100,7 @@ export default function Home() {
               <BlogPost
                 key={post.$id}
                 post={post}
-                onEdit={user ? () => setEditingPost(post) || setIsEditing(true) : null}
+                onEdit={user ? () => { setEditingPost(post); setIsEditing(true); } : null}
                 onDelete={user ? handleDelete : null}
               />
             ))
