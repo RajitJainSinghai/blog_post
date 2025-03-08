@@ -6,6 +6,7 @@ export default defineConfig({
   base:"/blog_post/",
   plugins: [react()],
   
+  
 })
 
 
