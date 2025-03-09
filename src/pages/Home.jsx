@@ -64,7 +64,7 @@ export default function Home() {
             setIsEditing(true);
             setEditingPost(null);
           }}
-          className="mb-8 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className=" bg-blue-600 text-white rounded-lg hover:bg-blue-700 createPost"
         >
           Create New Post
         </button>
