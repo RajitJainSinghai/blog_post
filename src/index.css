@@ -29,4 +29,7 @@
     .cards {
       justify-content: center;
     }
+    .fontsizemobile {
+      font-size: 1rem !important;
+    }
   }
