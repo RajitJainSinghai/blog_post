@@ -10,23 +10,34 @@ export default function BlogEditor({ post, onSave, onCancel }) {
   const [title, setTitle] = useState(post?.title || '');
   const editorRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState(null); // For image upload
   const [imageUrl, setImageUrl] = useState(post?.imageUrl || ''); // Store image URL
 
   const handleImageUpload = async (file) => {
     if (!file) return;
     try {
+      // Upload the image file
       const response = await storage.createFile(
         appwriteConfig.bucketId,
         ID.unique(),
         file
       );
-      const uploadedImageUrl = storage.getFilePreview(appwriteConfig.bucketId, response.$id).href;
+
+      // Use getFileView() to get the view URL of the uploaded image
+      const uploadedImageUrl = storage.getFileView(
+        appwriteConfig.bucketId,
+        response.$id
+      ).href;
+
+      // Update the state with the image URL
       setImageUrl(uploadedImageUrl);
+
+      // Display success message
       toast.success("Image uploaded successfully!");
+      return uploadedImageUrl;  // Return the image URL for use
     } catch (error) {
       console.error("Image upload error:", error);
       toast.error("Failed to upload image.");
+      return null;  // Return null in case of failure
     }
   };
 

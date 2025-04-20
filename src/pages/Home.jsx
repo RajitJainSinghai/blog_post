@@ -7,21 +7,20 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
 export default function Home() {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch posts on component mount
+  // Fetch posts on mount
   useEffect(() => {
     fetchPosts();
   }, []);
 
-  // Fetch all posts from Appwrite Database
   const fetchPosts = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       const response = await databases.listDocuments(
         appwriteConfig.databaseId,
         appwriteConfig.collectionId,
@@ -29,51 +28,51 @@ export default function Home() {
       );
       setPosts(response.documents);
     } catch (error) {
-      toast.error('Error fetching posts');
+      toast.error('Failed to fetch posts');
       console.error('Error fetching posts:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  // Handle post deletion and update state
   const handleDelete = async (postId) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this post?');
-    if (!confirmDelete) return;
-  
+    if (!window.confirm('Are you sure you want to delete this post?')) return;
+
     try {
       await databases.deleteDocument(
         appwriteConfig.databaseId,
         appwriteConfig.collectionId,
         postId
       );
-      setPosts((prevPosts) => prevPosts.filter((post) => post.$id !== postId));
+      setPosts((prev) => prev.filter((p) => p.$id !== postId));
       toast.success('Post deleted successfully!');
     } catch (error) {
       toast.error('Failed to delete post.');
       console.error('Error deleting post:', error);
     }
   };
-  
-  
+
   return (
-    <div className="container">
-      {/* Show "Create Post" Button only if User is Logged In */}
+    <div className="container mx-auto px-4 py-6">
+      {/* Create Button */}
       {user && !isEditing && (
-        <button
-          onClick={() => {
-            setIsEditing(true);
-            setEditingPost(null);
-          }}
-          className=" bg-blue-600 text-white rounded-lg hover:bg-blue-700 createPost"
-        >
-          Create New Post
-        </button>
+        <div className="mb-6 text-right">
+          <button
+            onClick={() => {
+              setIsEditing(true);
+              setEditingPost(null);
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            + Create New Post
+          </button>
+        </div>
       )}
 
-      {/* Show Editor if Editing Mode is Active */}
+      {/* Blog Editor */}
       {isEditing ? (
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">
+        <div className="mb-10">
+          <h2 className="text-2xl font-semibold mb-4">
             {editingPost ? 'Edit Post' : 'Create New Post'}
           </h2>
           <BlogEditor
@@ -90,7 +89,7 @@ export default function Home() {
           />
         </div>
       ) : (
-        <div className="cards">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {loading ? (
             <p className="text-gray-500">Loading posts...</p>
           ) : posts.length === 0 ? (
@@ -100,7 +99,10 @@ export default function Home() {
               <BlogPost
                 key={post.$id}
                 post={post}
-                onEdit={user ? () => { setEditingPost(post); setIsEditing(true); } : null}
+                onEdit={user ? () => {
+                  setEditingPost(post);
+                  setIsEditing(true);
+                } : null}
                 onDelete={user ? handleDelete : null}
               />
             ))
